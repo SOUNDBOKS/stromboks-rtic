@@ -25,7 +25,6 @@ mod app {
 
     use embedded_graphics::{
         mono_font::{ascii::FONT_6X10, MonoTextStyleBuilder},
-        image::{Image, ImageRawLE},
         pixelcolor::BinaryColor,
         prelude::*,
         text::{Baseline, Text},
@@ -107,20 +106,10 @@ mod app {
             &clocks,
         );
 
-        let mut display: GraphicsMode<_> = Builder::new().connect_spi(spi, dc, cs).into();
-
-        display.init().unwrap();
-        display.flush().unwrap();
-
-        let im: ImageRawLE<BinaryColor> = ImageRawLE::new(include_bytes!("./rust.raw"), 64);
-
-        Image::new(&im, Point::new(32, 0))
-            .draw(&mut display)
-            .unwrap();
-
-        display.flush().unwrap();
+        let display: GraphicsMode<_> = Builder::new().connect_spi(spi, dc, cs).into();
 
         blink_task::spawn().ok();
+        display_task::spawn().ok();
 
         (
             Shared {},
